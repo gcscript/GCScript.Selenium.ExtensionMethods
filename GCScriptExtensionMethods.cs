@@ -50,10 +50,21 @@ public static class GCScriptExtensionMethods
     {
         driver.WaitElementIsVisible(x => x.FindElement(By.LinkText(linkText)), seconds);
     }
-    private static void WaitElementIsVisible<T>(this IWebDriver driver, Func<IWebDriver, T> getElement, int seconds = 15) where T : IWebElement
+    private static async Task WaitElementIsVisible<T>(this IWebDriver driver, Func<IWebDriver, T> getElement, int seconds = 15) where T : IWebElement
     {
         seconds = Math.Max(1, seconds);
-        for (int i = 0; i < seconds; i++) { try { if (getElement(driver).Displayed) { return; } } catch { } Thread.Sleep(1000); }
+        for (int i = 0; i < seconds; i++)
+        {
+            try
+            {
+                if (getElement(driver).Displayed)
+                {
+                    return;
+                }
+            }
+            catch { }
+            await Task.Delay(1000);
+        }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementIsVisible]");
     }
 
@@ -77,7 +88,7 @@ public static class GCScriptExtensionMethods
     {
         driver.WaitElementExists(x => x.FindElement(By.LinkText(linkText)), seconds);
     }
-    private static void WaitElementExists<T>(this IWebDriver driver, Func<IWebDriver, T> getElement, int seconds = 15) where T : IWebElement
+    private static async Task WaitElementExists<T>(this IWebDriver driver, Func<IWebDriver, T> getElement, int seconds = 15) where T : IWebElement
     {
         seconds = Math.Max(1, seconds);
         for (int i = 0; i < seconds; i++)
@@ -88,7 +99,7 @@ public static class GCScriptExtensionMethods
                 return;
             }
             catch { }
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementExists]");
     }
@@ -97,10 +108,18 @@ public static class GCScriptExtensionMethods
     public static string InnerHTML(this IWebElement element) => element.GetAttribute("innerHTML");
 
     public static string GetAlertText(this IWebDriver driver, int seconds = 15) { driver.WaitAlert(seconds); return driver.SwitchTo().Alert().Text; }
-    public static void WaitAlert(this IWebDriver driver, int seconds = 15)
+    public static async Task WaitAlert(this IWebDriver driver, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
-        for (int i = 0; i < seconds; i++) { try { driver.SwitchTo().Alert(); return; } catch { } Thread.Sleep(1000); }
+        for (int i = 0; i < seconds; i++)
+        {
+            try
+            {
+                driver.SwitchTo().Alert(); return;
+            }
+            catch { }
+            await Task.Delay(1000);
+        }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitAlert]");
     }
     public static void WaitAlertAndAccept(this IWebDriver driver, int seconds = 15) { driver.WaitAlert(seconds); driver.SwitchTo().Alert().Accept(); }
@@ -108,31 +127,42 @@ public static class GCScriptExtensionMethods
 
     public static bool PageSourceContainsText(this IWebDriver driver, string text) => driver.PageSource.Contains(text, StringComparison.OrdinalIgnoreCase);
     public static bool PageSourceNotContainsText(this IWebDriver driver, string text) => !driver.PageSource.Contains(text, StringComparison.OrdinalIgnoreCase);
-    public static void WaitPageSourceContainsText(this IWebDriver driver, string text, int seconds = 15)
+    public static async Task WaitPageSourceContainsText(this IWebDriver driver, string text, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
-        for (int i = 0; i < seconds; i++) { try { if (driver.PageSourceContainsText(text)) { return; } } catch { } Thread.Sleep(1000); }
+        for (int i = 0; i < seconds; i++) { try { if (driver.PageSourceContainsText(text)) { return; } } catch { } await Task.Delay(1000); }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitPageSourceContainText]");
     }
-    public static void WaitPageSourceNotContainsText(this IWebDriver driver, string text, int seconds = 15)
+    public static async Task WaitPageSourceNotContainsText(this IWebDriver driver, string text, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
-        for (int i = 0; i < seconds; i++) { try { if (driver.PageSourceNotContainsText(text)) { return; } } catch { } Thread.Sleep(1000); }
+        for (int i = 0; i < seconds; i++) { try { if (driver.PageSourceNotContainsText(text)) { return; } } catch { } await Task.Delay(1000); }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitPageSourceNotContainText]");
     }
 
     public static bool UrlContainsText(this IWebDriver driver, string text) => driver.Url.Contains(text, StringComparison.OrdinalIgnoreCase);
     public static bool UrlNotContainsText(this IWebDriver driver, string text) => !driver.Url.Contains(text, StringComparison.OrdinalIgnoreCase);
-    public static void WaitUrlContainsText(this IWebDriver driver, string text, int seconds = 15)
+    public static async Task WaitUrlContainsText(this IWebDriver driver, string text, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
-        for (int i = 0; i < seconds; i++) { try { if (driver.UrlContainsText(text)) { return; } } catch { } Thread.Sleep(1000); }
+        for (int i = 0; i < seconds; i++) { try { if (driver.UrlContainsText(text)) { return; } } catch { } await Task.Delay(1000); }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitUrlContains]");
     }
-    public static void WaitUrlNotContainsText(this IWebDriver driver, string text, int seconds = 15)
+    public static async Task WaitUrlNotContainsText(this IWebDriver driver, string text, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
-        for (int i = 0; i < seconds; i++) { try { if (driver.UrlNotContainsText(text)) { return; } } catch { } Thread.Sleep(1000); }
+        for (int i = 0; i < seconds; i++)
+        {
+            try
+            {
+                if (driver.UrlNotContainsText(text))
+                {
+                    return;
+                }
+            }
+            catch { }
+            await Task.Delay(1000);
+        }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitUrlNotContains]");
     }
 
@@ -161,16 +191,35 @@ public static class GCScriptExtensionMethods
     }
     public static bool BodyContainsText(this IWebDriver driver, string text, bool full = true) => driver.GetBodyText(full).Contains(text, StringComparison.OrdinalIgnoreCase);
     public static bool BodyNotContainsText(this IWebDriver driver, string text, bool full = true) => !driver.GetBodyText(full).Contains(text, StringComparison.OrdinalIgnoreCase);
-    public static void WaitBodyContainsText(this IWebDriver driver, string text, int seconds = 15, bool full = true)
+    public static async Task WaitBodyContainsText(this IWebDriver driver, string text, int seconds = 15, bool full = true)
     {
         seconds = Math.Max(1, seconds);
-        for (int i = 0; i < seconds; i++) { try { if (driver.BodyContainsText(text, full)) { return; } } catch { } Thread.Sleep(1000); }
+        for (int i = 0; i < seconds; i++)
+        {
+            try
+            {
+                if (driver.BodyContainsText(text, full)) { return; }
+            }
+            catch { }
+            await Task.Delay(1000);
+        }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitBodyContainsText]");
     }
-    public static void WaitBodyNotContainsText(this IWebDriver driver, string text, int seconds = 15, bool full = true)
+    public static async Task WaitBodyNotContainsText(this IWebDriver driver, string text, int seconds = 15, bool full = true)
     {
         seconds = Math.Max(1, seconds);
-        for (int i = 0; i < seconds; i++) { try { if (driver.BodyNotContainsText(text, full)) { return; } } catch { } Thread.Sleep(1000); }
+        for (int i = 0; i < seconds; i++)
+        {
+            try
+            {
+                if (driver.BodyNotContainsText(text, full))
+                {
+                    return;
+                }
+            }
+            catch { }
+            await Task.Delay(1000);
+        }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitBodyNotContainsText]");
     }
 }
