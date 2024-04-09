@@ -344,8 +344,7 @@ public static class GCScriptExtensionMethods
         return driver.ExecuteJavaScript<string>("return arguments[0].value;", element);
     }
 
-
     public static void ForceClose(this IWebDriver driver) { try { driver.Close(); } catch { } try { driver.Quit(); } catch { } try { driver.Dispose(); } catch { } }
-    public static void SaveScreenshot(this IWebDriver driver, string filePath) { try { driver.TakeScreenshot().SaveAsFile(filePath); } catch { } }
-    public static void SavePageSource(this IWebDriver driver, string filePath) { try { File.WriteAllText(filePath, driver.PageSource); } catch { } }
+    public static void SaveScreenshot(this IWebDriver driver, string filePath) => driver.TakeScreenshot().SaveAsFile(filePath);
+    public static void SavePageSource(this IWebDriver driver, string filePath) => File.WriteAllText(filePath, driver.PageSource);
 }
