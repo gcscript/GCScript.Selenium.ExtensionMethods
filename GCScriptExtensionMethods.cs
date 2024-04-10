@@ -71,6 +71,44 @@ public static class GCScriptExtensionMethods
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementIsVisible]");
     }
 
+    public static async Task WaitElementIsNotVisibleById (this IWebDriver driver, string id, int seconds = 15)
+    {
+        await driver.WaitElementIsNotVisible(x => x.FindElement(By.Id(id)), seconds);
+    }
+    public static async Task WaitElementIsNotVisibleBySelector(this IWebDriver driver, string selector, int seconds = 15)
+    {
+        await driver.WaitElementIsNotVisible(x => x.FindElement(By.CssSelector(selector)), seconds);
+    }
+    public static async Task WaitElementIsNotVisibleByXPath(this IWebDriver driver, string xpath, int seconds = 15)
+    {
+        await driver.WaitElementIsNotVisible(x => x.FindElement(By.XPath(xpath)), seconds);
+    }
+    public static async Task WaitElementIsNotVisibleByTagName(this IWebDriver driver, string tagName, int seconds = 15)
+    {
+        await driver.WaitElementIsNotVisible(x => x.FindElement(By.TagName(tagName)), seconds);
+    }
+    public static async Task WaitElementIsNotVisibleByLinkText(this IWebDriver driver, string linkText, int seconds = 15)
+    {
+        await driver.WaitElementIsNotVisible(x => x.FindElement(By.LinkText(linkText)), seconds);
+    }
+    private static async Task WaitElementIsNotVisible<T>(this IWebDriver driver, Func<IWebDriver, T> getElement, int seconds = 15) where T : IWebElement
+    {
+        seconds = Math.Max(1, seconds);
+        for (int i = 0; i < seconds; i++)
+        {
+            try
+            {
+                if (!getElement(driver).Displayed)
+                {
+                    return;
+                }
+            }
+            catch { }
+            await Task.Delay(1000);
+        }
+        throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementIsNotVisible]");
+    }
+
     public static async Task WaitElementExistsById(this IWebDriver driver, string id, int seconds = 15)
     {
         await driver.WaitElementExists(x => x.FindElement(By.Id(id)), seconds);
@@ -105,6 +143,44 @@ public static class GCScriptExtensionMethods
             await Task.Delay(1000);
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementExists]");
+    }
+
+    public static async Task WaitElementNotExistsById (this IWebDriver driver, string id, int seconds = 15)
+    {
+        await driver.WaitElementNotExists(x => x.FindElement(By.Id(id)), seconds);
+    }
+    public static async Task WaitElementNotExistsBySelector(this IWebDriver driver, string selector, int seconds = 15)
+    {
+        await driver.WaitElementNotExists(x => x.FindElement(By.CssSelector(selector)), seconds);
+    }
+    public static async Task WaitElementNotExistsByXPath(this IWebDriver driver, string xpath, int seconds = 15)
+    {
+        await driver.WaitElementNotExists(x => x.FindElement(By.XPath(xpath)), seconds);
+    }
+    public static async Task WaitElementNotExistsByTagName(this IWebDriver driver, string tagName, int seconds = 15)
+    {
+        await driver.WaitElementNotExists(x => x.FindElement(By.TagName(tagName)), seconds);
+    }
+    public static async Task WaitElementNotExistsByLinkText(this IWebDriver driver, string linkText, int seconds = 15)
+    {
+        await driver.WaitElementNotExists(x => x.FindElement(By.LinkText(linkText)), seconds);
+    }
+    private static async Task WaitElementNotExists<T>(this IWebDriver driver, Func<IWebDriver, T> getElement, int seconds = 15) where T : IWebElement
+    {
+        seconds = Math.Max(1, seconds);
+        for (int i = 0; i < seconds; i++)
+        {
+            try
+            {
+                getElement(driver);
+            }
+            catch
+            {
+                return;
+            }
+            await Task.Delay(1000);
+        }
+        throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementNotExists]");
     }
 
     public static string GetAlertText(this IWebDriver driver, int seconds = 15) => driver.SwitchTo().Alert().Text;
