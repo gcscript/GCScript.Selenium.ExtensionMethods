@@ -365,6 +365,30 @@ public static class GCScriptExtensionMethods
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitAlertAsync]");
     }
+    public static async Task<string> WaitAlertAndGetTextAsync(this IWebDriver driver, int seconds = 15)
+    {
+        await driver.WaitAlertAsync(seconds);
+        return driver.GetAlertText();
+    }
+    public static async Task WaitAlertContainsTextAsync (this IWebDriver driver, string text, bool accept = true, int seconds = 15)
+    {
+        seconds = Math.Max(1, seconds);
+        for (int i = 0; i < seconds; i++)
+        {
+            try
+            {
+                if (driver.GetAlertText().Contains(text, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+            }
+            catch { }
+            await Task.Delay(1000);
+        }
+        throw new Exception($"Limit of {seconds} seconds exceeded in [WaitAlertContainsTextAsync]");
+    }
+    public static async Task WaitAlertContainsTextAndAcceptAsync(this IWebDriver driver, string text, int seconds = 15) { await driver.WaitAlertContainsTextAsync(text); driver.SwitchTo().Alert().Accept(); }
+    public static async Task WaitAlertContainsTextAndDismissAsync(this IWebDriver driver, string text, int seconds = 15) { await driver.WaitAlertContainsTextAsync(text); driver.SwitchTo().Alert().Dismiss(); }
     public static async Task WaitAlertAndAcceptAsync(this IWebDriver driver, int seconds = 15) { await driver.WaitAlertAsync(seconds); driver.SwitchTo().Alert().Accept(); }
     public static async Task WaitAlertAndDismissAsync(this IWebDriver driver, int seconds = 15) { await driver.WaitAlertAsync(seconds); driver.SwitchTo().Alert().Dismiss(); }
 
@@ -382,6 +406,30 @@ public static class GCScriptExtensionMethods
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitAlert]");
     }
+    public static string WaitAlertAndGetText(this IWebDriver driver, int seconds = 15)
+    {
+        driver.WaitAlert(seconds);
+        return driver.GetAlertText();
+    }
+    public static void WaitAlertContainsText(this IWebDriver driver, string text, bool accept = true, int seconds = 15)
+    {
+        seconds = Math.Max(1, seconds);
+        for (int i = 0; i < seconds; i++)
+        {
+            try
+            {
+                if (driver.GetAlertText().Contains(text, StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+            }
+            catch { }
+            Thread.Sleep(1000);
+        }
+        throw new Exception($"Limit of {seconds} seconds exceeded in [WaitAlertContainsTextAsync]");
+    }
+    public static void WaitAlertContainsTextAndAccept(this IWebDriver driver, string text, int seconds = 15) { driver.WaitAlertContainsText(text); driver.SwitchTo().Alert().Accept(); }
+    public static void WaitAlertContainsTextAndDismiss(this IWebDriver driver, string text, int seconds = 15) { driver.WaitAlertContainsText(text); driver.SwitchTo().Alert().Dismiss(); }
     public static void WaitAlertAndAccept(this IWebDriver driver, int seconds = 15) { driver.WaitAlert(seconds); driver.SwitchTo().Alert().Accept(); }
     public static void WaitAlertAndDismiss(this IWebDriver driver, int seconds = 15) { driver.WaitAlert(seconds); driver.SwitchTo().Alert().Dismiss(); }
 
@@ -583,6 +631,7 @@ public static class GCScriptExtensionMethods
         IWebDriver driver = ((IWrapsDriver)element).WrappedDriver;
         driver.ExecuteJavaScript("arguments[0].blur();", element);
     }
+
     public static async Task WaitForPageToLoadAsync(this IWebDriver driver, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
