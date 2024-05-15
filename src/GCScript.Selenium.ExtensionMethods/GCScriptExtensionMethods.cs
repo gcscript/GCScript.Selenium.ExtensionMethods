@@ -8,31 +8,112 @@ namespace GCScript.Selenium.ExtensionMethods;
 
 public static class GCScriptExtensionMethods
 {
-    public static IWebElement GetElementById(this IWebDriver driver, string id) => driver.FindElement(By.Id(id));
-    public static IWebElement GetElementBySelector(this IWebDriver driver, string selector) => driver.FindElement(By.CssSelector(selector));
-    public static IWebElement GetElementByXPath(this IWebDriver driver, string xpath) => driver.FindElement(By.XPath(xpath));
-    public static IWebElement GetElementByTagName(this IWebDriver driver, string tagName) => driver.FindElement(By.TagName(tagName));
-    public static IWebElement GetElementByLinkText(this IWebDriver driver, string linkText) => driver.FindElement(By.LinkText(linkText));
+    public static IWebElement GetElement(this IWebDriver driver, By by) => driver.FindElement(by);
+    public static IWebElement GetElement(this IWebElement element, By by) => element.FindElement(by);
+    public static ReadOnlyCollection<IWebElement> GetElements(this IWebDriver driver, By by) => driver.FindElements(by);
+    public static ReadOnlyCollection<IWebElement> GetElements(this IWebElement element, By by) => element.FindElements(by);
 
-    public static IWebElement GetElementById(this IWebElement element, string id) => element.FindElement(By.Id(id));
-    public static IWebElement GetElementBySelector(this IWebElement element, string selector) => element.FindElement(By.CssSelector(selector));
-    public static IWebElement GetElementByXPath(this IWebElement element, string xpath) => element.FindElement(By.XPath(xpath));
-    public static IWebElement GetElementByTagName(this IWebElement element, string tagName) => element.FindElement(By.TagName(tagName));
-    public static IWebElement GetElementByLinkText(this IWebElement element, string linkText) => element.FindElement(By.LinkText(linkText));
+    public static bool ElementIsVisible(this IWebDriver driver, By by)
+    {
+        try
+        {
+            return driver.GetElement(by).Displayed;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
-    public static ReadOnlyCollection<IWebElement> GetElementsById(this IWebDriver driver, string id) => driver.FindElements(By.Id(id));
-    public static ReadOnlyCollection<IWebElement> GetElementsBySelector(this IWebDriver driver, string selector) => driver.FindElements(By.CssSelector(selector));
-    public static ReadOnlyCollection<IWebElement> GetElementsByXPath(this IWebDriver driver, string xpath) => driver.FindElements(By.XPath(xpath));
-    public static ReadOnlyCollection<IWebElement> GetElementsByTagName(this IWebDriver driver, string tagName) => driver.FindElements(By.TagName(tagName));
-    public static ReadOnlyCollection<IWebElement> GetElementsByLinkText(this IWebDriver driver, string linkText) => driver.FindElements(By.LinkText(linkText));
+    public static bool ElementIsVisible(this IWebElement element, By by)
+    {
+        try
+        {
+            return element.GetElement(by).Displayed;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
-    public static ReadOnlyCollection<IWebElement> GetElementsById(this IWebElement element, string id) => element.FindElements(By.Id(id));
-    public static ReadOnlyCollection<IWebElement> GetElementsBySelector(this IWebElement element, string selector) => element.FindElements(By.CssSelector(selector));
-    public static ReadOnlyCollection<IWebElement> GetElementsByXPath(this IWebElement element, string xpath) => element.FindElements(By.XPath(xpath));
-    public static ReadOnlyCollection<IWebElement> GetElementsByTagName(this IWebElement element, string tagName) => element.FindElements(By.TagName(tagName));
-    public static ReadOnlyCollection<IWebElement> GetElementsByLinkText(this IWebElement element, string linkText) => element.FindElements(By.LinkText(linkText));
+    public static bool ElementExists(this IWebDriver driver, By by)
+    {
+        try
+        {
+            driver.GetElement(by);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
-    private static async Task WaitElementIsVisibleAsync(this IWebDriver driver, By by, int seconds = 15)
+    public static bool ElementExists(this IWebElement element, By by)
+    {
+        try
+        {
+            element.GetElement(by);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public static bool ElementIsSelected(this IWebDriver driver, By by)
+    {
+        try
+        {
+            return driver.GetElement(by).Selected;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public static bool ElementIsSelected(this IWebElement element, By by)
+    {
+        try
+        {
+            return element.GetElement(by).Selected;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public static bool ElementIsClickable(this IWebDriver driver, By by)
+    {
+        try
+        {
+            IWebElement element = driver.GetElement(by);
+            return element.Displayed && element.Enabled;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public static bool ElementIsClickable(this IWebElement element, By by)
+    {
+        try
+        {
+            IWebElement element2 = element.GetElement(by);
+            return element2.Displayed && element2.Enabled;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public static async Task WaitElementIsVisibleAsync(this IWebDriver driver, By by, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
         for (int i = 0; i < seconds; i++)
@@ -49,13 +130,8 @@ public static class GCScriptExtensionMethods
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementIsVisibleAsync]");
     }
-    public static async Task WaitElementIsVisibleByIdAsync(this IWebDriver driver, string id, int seconds = 15) => await driver.WaitElementIsVisibleAsync(By.Id(id), seconds);
-    public static async Task WaitElementIsVisibleBySelectorAsync(this IWebDriver driver, string selector, int seconds = 15) => await driver.WaitElementIsVisibleAsync(By.CssSelector(selector), seconds);
-    public static async Task WaitElementIsVisibleByXPathAsync(this IWebDriver driver, string xpath, int seconds = 15) => await driver.WaitElementIsVisibleAsync(By.XPath(xpath), seconds);
-    public static async Task WaitElementIsVisibleByTagNameAsync(this IWebDriver driver, string tagName, int seconds = 15) => await driver.WaitElementIsVisibleAsync(By.TagName(tagName), seconds);
-    public static async Task WaitElementIsVisibleByLinkTextAsync(this IWebDriver driver, string linkText, int seconds = 15) => await driver.WaitElementIsVisibleAsync(By.LinkText(linkText), seconds);
 
-    private static void WaitElementIsVisible(this IWebDriver driver, By by, int seconds = 15)
+    public static void WaitElementIsVisible(this IWebDriver driver, By by, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
         for (int i = 0; i < seconds; i++)
@@ -72,13 +148,8 @@ public static class GCScriptExtensionMethods
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementIsVisible]");
     }
-    public static void WaitElementIsVisibleById(this IWebDriver driver, string id, int seconds = 15) => driver.WaitElementIsVisible(By.Id(id), seconds);
-    public static void WaitElementIsVisibleBySelector(this IWebDriver driver, string selector, int seconds = 15) => driver.WaitElementIsVisible(By.CssSelector(selector), seconds);
-    public static void WaitElementIsVisibleByXPath(this IWebDriver driver, string xpath, int seconds = 15) => driver.WaitElementIsVisible(By.XPath(xpath), seconds);
-    public static void WaitElementIsVisibleByTagName(this IWebDriver driver, string tagName, int seconds = 15) => driver.WaitElementIsVisible(By.TagName(tagName), seconds);
-    public static void WaitElementIsVisibleByLinkText(this IWebDriver driver, string linkText, int seconds = 15) => driver.WaitElementIsVisible(By.LinkText(linkText), seconds);
 
-    private static async Task WaitElementIsNotVisibleAsync(this IWebDriver driver, By by, int seconds = 15)
+    public static async Task WaitElementIsNotVisibleAsync(this IWebDriver driver, By by, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
         for (int i = 0; i < seconds; i++)
@@ -89,19 +160,18 @@ public static class GCScriptExtensionMethods
                 {
                     return;
                 }
+            }
+            catch (NoSuchElementException)
+            {
+                return;
             }
             catch { }
             await Task.Delay(1000);
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementIsNotVisibleAsync]");
     }
-    public static async Task WaitElementIsNotVisibleByIdAsync(this IWebDriver driver, string id, int seconds = 15) => await driver.WaitElementIsNotVisibleAsync(By.Id(id), seconds);
-    public static async Task WaitElementIsNotVisibleBySelectorAsync(this IWebDriver driver, string selector, int seconds = 15) => await driver.WaitElementIsNotVisibleAsync(By.CssSelector(selector), seconds);
-    public static async Task WaitElementIsNotVisibleByXPathAsync(this IWebDriver driver, string xpath, int seconds = 15) => await driver.WaitElementIsNotVisibleAsync(By.XPath(xpath), seconds);
-    public static async Task WaitElementIsNotVisibleByTagNameAsync(this IWebDriver driver, string tagName, int seconds = 15) => await driver.WaitElementIsNotVisibleAsync(By.TagName(tagName), seconds);
-    public static async Task WaitElementIsNotVisibleByLinkTextAsync(this IWebDriver driver, string linkText, int seconds = 15) => await driver.WaitElementIsNotVisibleAsync(By.LinkText(linkText), seconds);
 
-    private static void WaitElementIsNotVisible(this IWebDriver driver, By by, int seconds = 15)
+    public static void WaitElementIsNotVisible(this IWebDriver driver, By by, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
         for (int i = 0; i < seconds; i++)
@@ -113,18 +183,17 @@ public static class GCScriptExtensionMethods
                     return;
                 }
             }
+            catch (NoSuchElementException)
+            {
+                return;
+            }
             catch { }
             Thread.Sleep(1000);
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementIsNotVisible]");
     }
-    public static void WaitElementIsNotVisibleById(this IWebDriver driver, string id, int seconds = 15) => driver.WaitElementIsNotVisible(By.Id(id), seconds);
-    public static void WaitElementIsNotVisibleBySelector(this IWebDriver driver, string selector, int seconds = 15) => driver.WaitElementIsNotVisible(By.CssSelector(selector), seconds);
-    public static void WaitElementIsNotVisibleByXPath(this IWebDriver driver, string xpath, int seconds = 15) => driver.WaitElementIsNotVisible(By.XPath(xpath), seconds);
-    public static void WaitElementIsNotVisibleByTagName(this IWebDriver driver, string tagName, int seconds = 15) => driver.WaitElementIsNotVisible(By.TagName(tagName), seconds);
-    public static void WaitElementIsNotVisibleByLinkText(this IWebDriver driver, string linkText, int seconds = 15) => driver.WaitElementIsNotVisible(By.LinkText(linkText), seconds);
 
-    private static async Task WaitElementExistsAsync(this IWebDriver driver, By by, int seconds = 15)
+    public static async Task WaitElementExistsAsync(this IWebDriver driver, By by, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
         for (int i = 0; i < seconds; i++)
@@ -139,13 +208,7 @@ public static class GCScriptExtensionMethods
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementExistsAsync]");
     }
-    public static async Task WaitElementExistsByIdAsync(this IWebDriver driver, string id, int seconds = 15) => await driver.WaitElementExistsAsync(By.Id(id), seconds);
-    public static async Task WaitElementExistsBySelectorAsync(this IWebDriver driver, string selector, int seconds = 15) => await driver.WaitElementExistsAsync(By.CssSelector(selector), seconds);
-    public static async Task WaitElementExistsByXPathAsync(this IWebDriver driver, string xpath, int seconds = 15) => await driver.WaitElementExistsAsync(By.XPath(xpath), seconds);
-    public static async Task WaitElementExistsByTagNameAsync(this IWebDriver driver, string tagName, int seconds = 15) => await driver.WaitElementExistsAsync(By.TagName(tagName), seconds);
-    public static async Task WaitElementExistsByLinkTextAsync(this IWebDriver driver, string linkText, int seconds = 15) => await driver.WaitElementExistsAsync(By.LinkText(linkText), seconds);
-
-    private static void WaitElementExists(this IWebDriver driver, By by, int seconds = 15)
+    public static void WaitElementExists(this IWebDriver driver, By by, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
         for (int i = 0; i < seconds; i++)
@@ -160,13 +223,8 @@ public static class GCScriptExtensionMethods
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementExists]");
     }
-    public static void WaitElementExistsById(this IWebDriver driver, string id, int seconds = 15) => driver.WaitElementExists(By.Id(id), seconds);
-    public static void WaitElementExistsBySelector(this IWebDriver driver, string selector, int seconds = 15) => driver.WaitElementExists(By.CssSelector(selector), seconds);
-    public static void WaitElementExistsByXPath(this IWebDriver driver, string xpath, int seconds = 15) => driver.WaitElementExists(By.XPath(xpath), seconds);
-    public static void WaitElementExistsByTagName(this IWebDriver driver, string tagName, int seconds = 15) => driver.WaitElementExists(By.TagName(tagName), seconds);
-    public static void WaitElementExistsByLinkText(this IWebDriver driver, string linkText, int seconds = 15) => driver.WaitElementExists(By.LinkText(linkText), seconds);
 
-    private static async Task WaitElementNotExistsAsync(this IWebDriver driver, By by, int seconds = 15)
+    public static async Task WaitElementNotExistsAsync(this IWebDriver driver, By by, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
         for (int i = 0; i < seconds; i++)
@@ -175,21 +233,17 @@ public static class GCScriptExtensionMethods
             {
                 driver.FindElement(by);
             }
-            catch
+            catch (NoSuchElementException)
             {
                 return;
             }
+            catch { }
             await Task.Delay(1000);
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementNotExistsAsync]");
     }
-    public static async Task WaitElementNotExistsByIdAsync(this IWebDriver driver, string id, int seconds = 15) => await driver.WaitElementNotExistsAsync(By.Id(id), seconds);
-    public static async Task WaitElementNotExistsBySelectorAsync(this IWebDriver driver, string selector, int seconds = 15) => await driver.WaitElementNotExistsAsync(By.CssSelector(selector), seconds);
-    public static async Task WaitElementNotExistsByXPathAsync(this IWebDriver driver, string xpath, int seconds = 15) => await driver.WaitElementNotExistsAsync(By.XPath(xpath), seconds);
-    public static async Task WaitElementNotExistsByTagNameAsync(this IWebDriver driver, string tagName, int seconds = 15) => await driver.WaitElementNotExistsAsync(By.TagName(tagName), seconds);
-    public static async Task WaitElementNotExistsByLinkTextAsync(this IWebDriver driver, string linkText, int seconds = 15) => await driver.WaitElementNotExistsAsync(By.LinkText(linkText), seconds);
 
-    private static void WaitElementNotExists(this IWebDriver driver, By by, int seconds = 15)
+    public static void WaitElementNotExists(this IWebDriver driver, By by, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
         for (int i = 0; i < seconds; i++)
@@ -198,21 +252,17 @@ public static class GCScriptExtensionMethods
             {
                 driver.FindElement(by);
             }
-            catch
+            catch (NoSuchElementException)
             {
                 return;
             }
+            catch { }
             Thread.Sleep(1000);
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementNotExists]");
     }
-    public static void WaitElementNotExistsById(this IWebDriver driver, string id, int seconds = 15) => driver.WaitElementNotExists(By.Id(id), seconds);
-    public static void WaitElementNotExistsBySelector(this IWebDriver driver, string selector, int seconds = 15) => driver.WaitElementNotExists(By.CssSelector(selector), seconds);
-    public static void WaitElementNotExistsByXPath(this IWebDriver driver, string xpath, int seconds = 15) => driver.WaitElementNotExists(By.XPath(xpath), seconds);
-    public static void WaitElementNotExistsByTagName(this IWebDriver driver, string tagName, int seconds = 15) => driver.WaitElementNotExists(By.TagName(tagName), seconds);
-    public static void WaitElementNotExistsByLinkText(this IWebDriver driver, string linkText, int seconds = 15) => driver.WaitElementNotExists(By.LinkText(linkText), seconds);
 
-    private static async Task WaitElementClickableAsync(this IWebDriver driver, By by, int seconds = 15)
+    public static async Task WaitElementClickableAsync(this IWebDriver driver, By by, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
         for (int i = 0; i < seconds; i++)
@@ -229,13 +279,8 @@ public static class GCScriptExtensionMethods
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementClickableAsync]");
     }
-    public static async Task WaitElementClickableByIdAsync(this IWebDriver driver, string id, int seconds = 15) => await driver.WaitElementClickableAsync(By.Id(id), seconds);
-    public static async Task WaitElementClickableBySelectorAsync(this IWebDriver driver, string selector, int seconds = 15) => await driver.WaitElementClickableAsync(By.CssSelector(selector), seconds);
-    public static async Task WaitElementClickableByXPathAsync(this IWebDriver driver, string xpath, int seconds = 15) => await driver.WaitElementClickableAsync(By.XPath(xpath), seconds);
-    public static async Task WaitElementClickableByTagNameAsync(this IWebDriver driver, string tagName, int seconds = 15) => await driver.WaitElementClickableAsync(By.TagName(tagName), seconds);
-    public static async Task WaitElementClickableByLinkTextAsync(this IWebDriver driver, string linkText, int seconds = 15) => await driver.WaitElementClickableAsync(By.LinkText(linkText), seconds);
 
-    private static void WaitElementClickable(this IWebDriver driver, By by, int seconds = 15)
+    public static void WaitElementClickable(this IWebDriver driver, By by, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
         for (int i = 0; i < seconds; i++)
@@ -252,13 +297,8 @@ public static class GCScriptExtensionMethods
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementClickable]");
     }
-    public static void WaitElementClickableById(this IWebDriver driver, string id, int seconds = 15) => driver.WaitElementClickable(By.Id(id), seconds);
-    public static void WaitElementClickableBySelector(this IWebDriver driver, string selector, int seconds = 15) => driver.WaitElementClickable(By.CssSelector(selector), seconds);
-    public static void WaitElementClickableByXPath(this IWebDriver driver, string xpath, int seconds = 15) => driver.WaitElementClickable(By.XPath(xpath), seconds);
-    public static void WaitElementClickableByTagName(this IWebDriver driver, string tagName, int seconds = 15) => driver.WaitElementClickable(By.TagName(tagName), seconds);
-    public static void WaitElementClickableByLinkText(this IWebDriver driver, string linkText, int seconds = 15) => driver.WaitElementClickable(By.LinkText(linkText), seconds);
 
-    private static async Task WaitElementSelectedAsync(this IWebDriver driver, By by, int seconds = 15)
+    public static async Task WaitElementSelectedAsync(this IWebDriver driver, By by, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
         for (int i = 0; i < seconds; i++)
@@ -275,13 +315,8 @@ public static class GCScriptExtensionMethods
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementSelectedAsync]");
     }
-    public static async Task WaitElementSelectedByIdAsync(this IWebDriver driver, string id, int seconds = 15) => await driver.WaitElementSelectedAsync(By.Id(id), seconds);
-    public static async Task WaitElementSelectedBySelectorAsync(this IWebDriver driver, string selector, int seconds = 15) => await driver.WaitElementSelectedAsync(By.CssSelector(selector), seconds);
-    public static async Task WaitElementSelectedByXPathAsync(this IWebDriver driver, string xpath, int seconds = 15) => await driver.WaitElementSelectedAsync(By.XPath(xpath), seconds);
-    public static async Task WaitElementSelectedByTagNameAsync(this IWebDriver driver, string tagName, int seconds = 15) => await driver.WaitElementSelectedAsync(By.TagName(tagName), seconds);
-    public static async Task WaitElementSelectedByLinkTextAsync(this IWebDriver driver, string linkText, int seconds = 15) => await driver.WaitElementSelectedAsync(By.LinkText(linkText), seconds);
 
-    private static void WaitElementSelected(this IWebDriver driver, By by, int seconds = 15)
+    public static void WaitElementSelected(this IWebDriver driver, By by, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
         for (int i = 0; i < seconds; i++)
@@ -298,13 +333,8 @@ public static class GCScriptExtensionMethods
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementSelected]");
     }
-    public static void WaitElementSelectedById(this IWebDriver driver, string id, int seconds = 15) => driver.WaitElementSelected(By.Id(id), seconds);
-    public static void WaitElementSelectedBySelector(this IWebDriver driver, string selector, int seconds = 15) => driver.WaitElementSelected(By.CssSelector(selector), seconds);
-    public static void WaitElementSelectedByXPath(this IWebDriver driver, string xpath, int seconds = 15) => driver.WaitElementSelected(By.XPath(xpath), seconds);
-    public static void WaitElementSelectedByTagName(this IWebDriver driver, string tagName, int seconds = 15) => driver.WaitElementSelected(By.TagName(tagName), seconds);
-    public static void WaitElementSelectedByLinkText(this IWebDriver driver, string linkText, int seconds = 15) => driver.WaitElementSelected(By.LinkText(linkText), seconds);
 
-    private static async Task WaitElementNotSelectedAsync(this IWebDriver driver, By by, int seconds = 15)
+    public static async Task WaitElementNotSelectedAsync(this IWebDriver driver, By by, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
         for (int i = 0; i < seconds; i++)
@@ -321,13 +351,8 @@ public static class GCScriptExtensionMethods
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementNotSelectedAsync]");
     }
-    public static async Task WaitElementNotSelectedByIdAsync(this IWebDriver driver, string id, int seconds = 15) => await driver.WaitElementNotSelectedAsync(By.Id(id), seconds);
-    public static async Task WaitElementNotSelectedBySelectorAsync(this IWebDriver driver, string selector, int seconds = 15) => await driver.WaitElementNotSelectedAsync(By.CssSelector(selector), seconds);
-    public static async Task WaitElementNotSelectedByXPathAsync(this IWebDriver driver, string xpath, int seconds = 15) => await driver.WaitElementNotSelectedAsync(By.XPath(xpath), seconds);
-    public static async Task WaitElementNotSelectedByTagNameAsync(this IWebDriver driver, string tagName, int seconds = 15) => await driver.WaitElementNotSelectedAsync(By.TagName(tagName), seconds);
-    public static async Task WaitElementNotSelectedByLinkTextAsync(this IWebDriver driver, string linkText, int seconds = 15) => await driver.WaitElementNotSelectedAsync(By.LinkText(linkText), seconds);
 
-    private static void WaitElementNotSelected(this IWebDriver driver, By by, int seconds = 15)
+    public static void WaitElementNotSelected(this IWebDriver driver, By by, int seconds = 15)
     {
         seconds = Math.Max(1, seconds);
         for (int i = 0; i < seconds; i++)
@@ -344,11 +369,6 @@ public static class GCScriptExtensionMethods
         }
         throw new Exception($"Limit of {seconds} seconds exceeded in [WaitElementNotSelected]");
     }
-    public static void WaitElementNotSelectedById(this IWebDriver driver, string id, int seconds = 15) => driver.WaitElementNotSelected(By.Id(id), seconds);
-    public static void WaitElementNotSelectedBySelector(this IWebDriver driver, string selector, int seconds = 15) => driver.WaitElementNotSelected(By.CssSelector(selector), seconds);
-    public static void WaitElementNotSelectedByXPath(this IWebDriver driver, string xpath, int seconds = 15) => driver.WaitElementNotSelected(By.XPath(xpath), seconds);
-    public static void WaitElementNotSelectedByTagName(this IWebDriver driver, string tagName, int seconds = 15) => driver.WaitElementNotSelected(By.TagName(tagName), seconds);
-    public static void WaitElementNotSelectedByLinkText(this IWebDriver driver, string linkText, int seconds = 15) => driver.WaitElementNotSelected(By.LinkText(linkText), seconds);
 
     public static string GetAlertText(this IWebDriver driver, int seconds = 15) => driver.SwitchTo().Alert().Text;
     public static async Task WaitAlertAsync(this IWebDriver driver, int seconds = 15)
@@ -536,22 +556,22 @@ public static class GCScriptExtensionMethods
         if (full)
         {
             StringBuilder bodyText = new();
-            bodyText.AppendLine(driver.GetElementBySelector("body").Text);
+            bodyText.AppendLine(driver.FindElement(By.CssSelector("body")).Text);
 
-            ReadOnlyCollection<IWebElement> iframes = driver.GetElementsByTagName("iframe");
+            ReadOnlyCollection<IWebElement> iframes = driver.FindElements(By.TagName("iframe"));
 
             foreach (IWebElement? iframe in iframes)
             {
                 bodyText.AppendLine($"--------------------[IFRAME {iframes.IndexOf(iframe).ToString().PadLeft(2, '0')}]--------------------");
                 driver.SwitchTo().Frame(iframe);
-                bodyText.AppendLine(driver.GetElementBySelector("body").Text);
+                bodyText.AppendLine(driver.FindElement(By.CssSelector("body")).Text);
                 driver.SwitchTo().DefaultContent();
             }
             return bodyText.ToString();
         }
         else
         {
-            return driver.GetElementBySelector("body").Text;
+            return driver.FindElement(By.CssSelector("body")).Text;
         }
     }
     public static bool BodyContainsText(this IWebDriver driver, string text, bool full = true) => driver.GetBodyText(full).Contains(text, StringComparison.OrdinalIgnoreCase);
@@ -626,7 +646,7 @@ public static class GCScriptExtensionMethods
         IWebDriver driver = ((IWrapsDriver)element).WrappedDriver;
         driver.ExecuteJavaScript("arguments[0].focus();", element);
     }
-    public static void Unfocus(this IWebElement element)
+    public static void Blur(this IWebElement element)
     {
         IWebDriver driver = ((IWrapsDriver)element).WrappedDriver;
         driver.ExecuteJavaScript("arguments[0].blur();", element);
