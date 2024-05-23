@@ -468,7 +468,7 @@ public static class GCScriptExtensionMethods
             catch { }
             await Task.Delay(1000);
         }
-        throw new Exception("Limit of {seconds} seconds exceeded in [WaitUrlContainsTextAsync]");
+        throw new Exception($"E133345 - Limit of {seconds} seconds exceeded!");
     }
     public static void WaitUrlContainsText(this IWebDriver driver, string text, int seconds = 15)
     {
@@ -794,21 +794,27 @@ public static class GCScriptExtensionMethods
 
     public static void NavigateToUrl(this IWebDriver driver, string url) => driver.Navigate().GoToUrl(url);
     public static void NavigateToUrlWithJS(this IWebDriver driver, string url) => driver.ExecuteJavaScript($"window.location.href = '{url}';");
+    public static void RefreshPageWithJS(this IWebDriver driver, bool reloadFromServer = true) => driver.ExecuteJavaScript($"window.location.reload({(reloadFromServer ? "true" : "")});");
 
     public static void SelectIndexInDropdown(this IWebElement element, int index) => new SelectElement(element).SelectByIndex(index);
     public static void SelectTextInDropdown(this IWebElement element, string text) => new SelectElement(element).SelectByText(text);
     public static void SelectValueInDropdown(this IWebElement element, string value) => new SelectElement(element).SelectByValue(value);
 
-    public static void SetValueWithJS(this IWebElement element, string value)
-    {
-        IWebDriver driver = ((IWrapsDriver)element).WrappedDriver;
-        driver.ExecuteJavaScript("arguments[0].value = arguments[1];", element, value);
-    }
     public static string GetValueWithJS(this IWebElement element)
     {
         IWebDriver driver = ((IWrapsDriver)element).WrappedDriver;
         return driver.ExecuteJavaScript<string>("return arguments[0].value;", element);
     }
+    public static void SetValueWithJS(this IWebElement element, string value)
+    {
+        IWebDriver driver = ((IWrapsDriver)element).WrappedDriver;
+        driver.ExecuteJavaScript("arguments[0].value = arguments[1];", element, value);
+    }
+
+    public static void SetAttributeWithJS(this IWebDriver driver, IWebElement element, string attributeName, string value) => driver.ExecuteJavaScript($"arguments[0].setAttribute('{attributeName}', '{value}');", element);
+    public static void RemoveAttributeWithJS(this IWebDriver driver, IWebElement element, string attributeName) => driver.ExecuteJavaScript($"arguments[0].removeAttribute('{attributeName}');", element);
+    public static void ScrollIntoViewWithJS(this IWebDriver driver, bool alignToTop = true) => driver.ExecuteJavaScript($"arguments[0].scrollIntoView({(alignToTop ? "true" : "")});");
+    public static string GetUserAgentWithJS(this IWebDriver driver) => driver.ExecuteJavaScript<string>("return navigator.userAgent;");
 
     public static void ForceClose(this IWebDriver driver) { try { driver.Close(); } catch { } try { driver.Quit(); } catch { } try { driver.Dispose(); } catch { } }
     public static void SaveScreenshot(this IWebDriver driver, string filePath) => driver.TakeScreenshot().SaveAsFile(filePath);
