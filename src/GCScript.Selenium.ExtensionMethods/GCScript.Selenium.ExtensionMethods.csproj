@@ -5,13 +5,17 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Version>2.0.0</Version>
-		<Title>GCScript Selenium Extension Methods</Title>
 		<Authors>GCScript</Authors>
 		<Company>GCScript</Company>
+		<Copyright>GCScript</Copyright>
+		<Title>GCScript Selenium Extension Methods</Title>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<PackageProjectUrl>https://github.com/gcscript/GCScript.Selenium.ExtensionMethods</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<PackageTags>GCScript Selenium Extension Methods</PackageTags>
+		<PackageVersion>2.0.1</PackageVersion>
+		<RepositoryUrl>https://github.com/gcscript/GCScript.Selenium.ExtensionMethods</RepositoryUrl>
 	</PropertyGroup>
 
 	<ItemGroup>
