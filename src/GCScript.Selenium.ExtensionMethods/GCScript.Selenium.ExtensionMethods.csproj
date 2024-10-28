@@ -14,7 +14,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<PackageTags>GCScript Selenium Extension Methods</PackageTags>
-		<PackageVersion>2.1.0</PackageVersion>
+		<PackageVersion>2.1.1</PackageVersion>
 		<RepositoryUrl>https://github.com/gcscript/GCScript.Selenium.ExtensionMethods</RepositoryUrl>
 	</PropertyGroup>
 
