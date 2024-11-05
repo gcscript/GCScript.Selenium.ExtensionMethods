@@ -1,5 +1,5 @@
-﻿using GCScript.Selenium.ExtensionMethods.Enums;
-using GCScript.Selenium.ExtensionMethods.Exceptions;
+﻿using GCScript.Common.Exceptions;
+using GCScript.Selenium.ExtensionMethods.Enums;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.Extensions;
@@ -815,8 +815,16 @@ public static class GCScriptExtensionMethods {
 	public static void GCSRemove(this IWebElement element) {
 		element.GetWebDriver().ExecuteJavaScript("arguments[0].remove();", element);
 	}
+	public static void GCSSetAttribute(this IWebElement element, string attributeName, string value, bool escapeSingleQuotes = true) {
+		value = escapeSingleQuotes ? value.Replace("'", "\\'") : value;
+		element.GetWebDriver().ExecuteJavaScript($"arguments[0].setAttribute('{attributeName}', '{value}');", element);
+	}
 	public static void GCSRemoveAttribute(this IWebElement element, string attributeName) {
 		element.GetWebDriver().ExecuteJavaScript($"arguments[0].removeAttribute('{attributeName}');", element);
+	}
+	public static void GCSSetProperty (this IWebElement element, string propertyName, string value, bool escapeSingleQuotes = true) {
+		value = escapeSingleQuotes ? value.Replace("'", "\\'") : value;
+		element.GetWebDriver().ExecuteJavaScript($"arguments[0].{propertyName} = '{value}';", element);
 	}
 
 	public static void GCSDragAndDrop(this IWebDriver driver, IWebElement source, IWebElement target) => new Actions(driver).DragAndDrop(source, target).Perform();
