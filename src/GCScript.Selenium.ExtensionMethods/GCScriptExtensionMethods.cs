@@ -401,10 +401,10 @@ public static class GCScriptExtensionMethods {
 	}
 
 	public static IAlert GCSGetAlert(this IWebDriver driver) => driver.SwitchTo().Alert();
+	public static string GCSGetAlertText(this IWebDriver driver) => driver.GCSGetAlert().Text;
 
 	//=================================================[DEPRECATED]=================================================
 
-	public static string GCSGetAlertText(this IWebDriver driver, int seconds = 15) => driver.SwitchTo().Alert().Text;
 	public static async Task GCSWaitAlertAsync(this IWebDriver driver, int seconds = 15) {
 		seconds = Math.Max(1, seconds);
 		for (int i = 0; i < seconds; i++) {
