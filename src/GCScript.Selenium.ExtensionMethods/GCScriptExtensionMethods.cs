@@ -418,21 +418,23 @@ public static class GCScriptExtensionMethods {
 		var alert = await driver.GCSWaitAlertAsync(seconds);
 		return alert.Text;
 	}
-
-	//=================================================[DEPRECATED]=================================================
-	public static async Task GCSWaitAlertContainsTextAsync(this IWebDriver driver, string text, bool accept = true, int seconds = 15) {
-		seconds = Math.Max(1, seconds);
-		for (int i = 0; i < seconds; i++) {
+	public static async Task<IAlert> GCSWaitAlertContainsTextAsync(this IWebDriver driver, string text, int seconds = 15) {
+		var timeout = TimeSpan.FromSeconds(Math.Max(1, seconds));
+		var stopwatch = Stopwatch.StartNew();
+		while (stopwatch.Elapsed < timeout) {
 			try {
 				if (driver.GCSGetAlertText().Contains(text, StringComparison.OrdinalIgnoreCase)) {
-					return;
+					return driver.SwitchTo().Alert();
 				}
 			}
 			catch { }
 			await Task.Delay(1000);
 		}
-		throw new GCScriptException(535001, $"Limit of {seconds} seconds exceeded!");
+		throw new GCScriptException(472381, $"No alert with text '{text}' was found within {timeout.TotalSeconds} seconds.");
 	}
+
+	//=================================================[DEPRECATED]=================================================
+
 	public static async Task GCSWaitAlertContainsTextAndAcceptAsync(this IWebDriver driver, string text, int seconds = 15) { await driver.GCSWaitAlertContainsTextAsync(text); driver.SwitchTo().Alert().Accept(); }
 	public static async Task GCSWaitAlertContainsTextAndDismissAsync(this IWebDriver driver, string text, int seconds = 15) { await driver.GCSWaitAlertContainsTextAsync(text); driver.SwitchTo().Alert().Dismiss(); }
 	public static async Task GCSWaitAlertAndAcceptAsync(this IWebDriver driver, int seconds = 15) { await driver.GCSWaitAlertAsync(seconds); driver.SwitchTo().Alert().Accept(); }
