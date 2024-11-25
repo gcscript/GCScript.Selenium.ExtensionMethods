@@ -414,13 +414,12 @@ public static class GCScriptExtensionMethods {
 		}
 		throw new GCScriptException(544806, $"The alert was not found within {timeout.TotalSeconds} seconds.");
 	}
+	public static async Task<string> GCSWaitAlertAndGetTextAsync(this IWebDriver driver, int seconds = 15) {
+		var alert = await driver.GCSWaitAlertAsync(seconds);
+		return alert.Text;
+	}
 
 	//=================================================[DEPRECATED]=================================================
-
-	public static async Task<string> GCSWaitAlertAndGetTextAsync(this IWebDriver driver, int seconds = 15) {
-		await driver.GCSWaitAlertAsync(seconds);
-		return driver.GCSGetAlertText();
-	}
 	public static async Task GCSWaitAlertContainsTextAsync(this IWebDriver driver, string text, bool accept = true, int seconds = 15) {
 		seconds = Math.Max(1, seconds);
 		for (int i = 0; i < seconds; i++) {
