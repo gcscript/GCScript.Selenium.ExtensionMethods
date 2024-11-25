@@ -400,6 +400,8 @@ public static class GCScriptExtensionMethods {
 		throw new GCScriptException(695998, $"The locator '{by}' was found within {timeout.TotalSeconds} seconds.");
 	}
 
+	public static IAlert GCSGetAlert(this IWebDriver driver) => driver.SwitchTo().Alert();
+
 	//=================================================[DEPRECATED]=================================================
 
 	public static string GCSGetAlertText(this IWebDriver driver, int seconds = 15) => driver.SwitchTo().Alert().Text;
