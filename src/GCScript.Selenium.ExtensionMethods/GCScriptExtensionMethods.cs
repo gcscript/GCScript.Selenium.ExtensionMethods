@@ -401,7 +401,9 @@ public static class GCScriptExtensionMethods {
 	}
 
 	public static IAlert GCSGetAlert(this IWebDriver driver) => driver.SwitchTo().Alert();
+
 	public static string GCSGetAlertText(this IWebDriver driver) => driver.GCSGetAlert().Text;
+
 	public static async Task<IAlert> GCSWaitAlertAsync(this IWebDriver driver, int seconds = 15) {
 		var timeout = TimeSpan.FromSeconds(Math.Max(1, seconds));
 		var stopwatch = Stopwatch.StartNew();
@@ -414,10 +416,12 @@ public static class GCScriptExtensionMethods {
 		}
 		throw new GCScriptException(544806, $"The alert was not found within {timeout.TotalSeconds} seconds.");
 	}
+
 	public static async Task<string> GCSWaitAlertAndGetTextAsync(this IWebDriver driver, int seconds = 15) {
 		var alert = await driver.GCSWaitAlertAsync(seconds);
 		return alert.Text;
 	}
+
 	public static async Task<IAlert> GCSWaitAlertContainsTextAsync(this IWebDriver driver, string text, int seconds = 15) {
 		var timeout = TimeSpan.FromSeconds(Math.Max(1, seconds));
 		var stopwatch = Stopwatch.StartNew();
@@ -433,13 +437,27 @@ public static class GCScriptExtensionMethods {
 		throw new GCScriptException(472381, $"No alert with text '{text}' was found within {timeout.TotalSeconds} seconds.");
 	}
 
+	public static async Task GCSWaitAlertAndAcceptAsync(this IWebDriver driver, int seconds = 15) {
+		var alert = await driver.GCSWaitAlertAsync(seconds);
+		alert.Accept();
+	}
+
+	public static async Task GCSWaitAlertAndDismissAsync(this IWebDriver driver, int seconds = 15) {
+		var alert = await driver.GCSWaitAlertAsync(seconds);
+		alert.Dismiss();
+	}
+
+	public static async Task GCSWaitAlertContainsTextAndAcceptAsync(this IWebDriver driver, string text, int seconds = 15) {
+		var alert = await driver.GCSWaitAlertContainsTextAsync(text, seconds);
+		alert.Accept();
+	}
+
+	public static async Task GCSWaitAlertContainsTextAndDismissAsync(this IWebDriver driver, string text, int seconds = 15) {
+		var alert = await driver.GCSWaitAlertContainsTextAsync(text, seconds);
+		alert.Dismiss();
+	}
+
 	//=================================================[DEPRECATED]=================================================
-
-	public static async Task GCSWaitAlertContainsTextAndAcceptAsync(this IWebDriver driver, string text, int seconds = 15) { await driver.GCSWaitAlertContainsTextAsync(text); driver.SwitchTo().Alert().Accept(); }
-	public static async Task GCSWaitAlertContainsTextAndDismissAsync(this IWebDriver driver, string text, int seconds = 15) { await driver.GCSWaitAlertContainsTextAsync(text); driver.SwitchTo().Alert().Dismiss(); }
-	public static async Task GCSWaitAlertAndAcceptAsync(this IWebDriver driver, int seconds = 15) { await driver.GCSWaitAlertAsync(seconds); driver.SwitchTo().Alert().Accept(); }
-	public static async Task GCSWaitAlertAndDismissAsync(this IWebDriver driver, int seconds = 15) { await driver.GCSWaitAlertAsync(seconds); driver.SwitchTo().Alert().Dismiss(); }
-
 	public static void GCSWaitAlert(this IWebDriver driver, int seconds = 15) {
 		seconds = Math.Max(1, seconds);
 		for (int i = 0; i < seconds; i++) {
@@ -826,7 +844,7 @@ public static class GCScriptExtensionMethods {
 	public static void GCSRemoveAttribute(this IWebElement element, string attributeName) {
 		element.GetWebDriver().ExecuteJavaScript($"arguments[0].removeAttribute('{attributeName}');", element);
 	}
-	public static void GCSSetProperty (this IWebElement element, string propertyName, string value, bool escapeSingleQuotes = true) {
+	public static void GCSSetProperty(this IWebElement element, string propertyName, string value, bool escapeSingleQuotes = true) {
 		value = escapeSingleQuotes ? value.Replace("'", "\\'") : value;
 		element.GetWebDriver().ExecuteJavaScript($"arguments[0].{propertyName} = '{value}';", element);
 	}
