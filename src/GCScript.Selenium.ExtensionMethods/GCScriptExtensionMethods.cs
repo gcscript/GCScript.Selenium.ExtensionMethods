@@ -402,20 +402,21 @@ public static class GCScriptExtensionMethods {
 
 	public static IAlert GCSGetAlert(this IWebDriver driver) => driver.SwitchTo().Alert();
 	public static string GCSGetAlertText(this IWebDriver driver) => driver.GCSGetAlert().Text;
-
-	//=================================================[DEPRECATED]=================================================
-
-	public static async Task GCSWaitAlertAsync(this IWebDriver driver, int seconds = 15) {
-		seconds = Math.Max(1, seconds);
-		for (int i = 0; i < seconds; i++) {
+	public static async Task<IAlert> GCSWaitAlertAsync(this IWebDriver driver, int seconds = 15) {
+		var timeout = TimeSpan.FromSeconds(Math.Max(1, seconds));
+		var stopwatch = Stopwatch.StartNew();
+		while (stopwatch.Elapsed < timeout) {
 			try {
-				driver.SwitchTo().Alert(); return;
+				return driver.GCSGetAlert();
 			}
 			catch { }
 			await Task.Delay(1000);
 		}
-		throw new GCScriptException(835741, $"Limit of {seconds} seconds exceeded!");
+		throw new GCScriptException(544806, $"The alert was not found within {timeout.TotalSeconds} seconds.");
 	}
+
+	//=================================================[DEPRECATED]=================================================
+
 	public static async Task<string> GCSWaitAlertAndGetTextAsync(this IWebDriver driver, int seconds = 15) {
 		await driver.GCSWaitAlertAsync(seconds);
 		return driver.GCSGetAlertText();
