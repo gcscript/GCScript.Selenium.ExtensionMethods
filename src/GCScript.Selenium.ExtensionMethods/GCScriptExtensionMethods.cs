@@ -457,6 +457,9 @@ public static class GCScriptExtensionMethods {
 		alert.Dismiss();
 	}
 
+	public static string GCSInnerText(this IWebElement element) => element.GetDomProperty("innerText");
+	public static string GCSInnerHtml(this IWebElement element) => element.GetDomProperty("innerHTML");
+
 	//=================================================[DEPRECATED]=================================================
 	public static void GCSWaitAlert(this IWebDriver driver, int seconds = 15) {
 		seconds = Math.Max(1, seconds);
@@ -655,8 +658,7 @@ public static class GCScriptExtensionMethods {
 		throw new GCScriptException(945887, $"Limit of {seconds} seconds exceeded!");
 	}
 
-	public static string GCSInnerText(this IWebElement element) => element.GetAttribute("innerText");
-	public static string GCSInnerHTML(this IWebElement element) => element.GetAttribute("innerHTML");
+
 	public static void GCSFocus(this IWebElement element) {
 		element.GetWebDriver().ExecuteJavaScript("arguments[0].focus();", element);
 	}
