@@ -459,6 +459,7 @@ public static class GCScriptExtensionMethods {
 
 	public static string GCSInnerText(this IWebElement element) => element.GetDomProperty("innerText");
 	public static string GCSInnerHtml(this IWebElement element) => element.GetDomProperty("innerHTML");
+	public static string GCSOuterHtml(this IWebElement element) => element.GetDomProperty("outerHTML");
 
 	//=================================================[DEPRECATED]=================================================
 	public static void GCSWaitAlert(this IWebDriver driver, int seconds = 15) {
